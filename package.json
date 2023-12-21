@@ -9,6 +9,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@svg-icons/fa-solid": "^1.87.0",
 		"@vyke/elements": "^0.0.8",
 		"request-animation-frames": "^0.1.1"
 	},

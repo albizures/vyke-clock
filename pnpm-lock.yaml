@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@svg-icons/fa-solid':
+    specifier: ^1.87.0
+    version: 1.87.0
   '@vyke/elements':
     specifier: ^0.0.8
     version: 0.0.8
@@ -681,6 +684,10 @@ packages:
       - supports-color
       - typescript
     dev: true
+
+  /@svg-icons/fa-solid@1.87.0:
+    resolution: {integrity: sha512-7N8BpRgoiTiYBq02cfECRoCmw1nZ2OZbgzH1wJlerfUbHILxHXRyN5PsQtzqeFTuw0ABHyhRyXB0M8usM2AWyQ==}
+    dev: false
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}

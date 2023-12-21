@@ -19,7 +19,7 @@ function getValues(date: Date) {
 }
 
 function ClockValueContainer(...children: Array<HTMLElement | string>) {
-	return div({ class: 'flex flex-col text-2xl' }, ...children)
+	return div({ class: 'flex flex-col md:text-2xl' }, ...children)
 }
 
 function ClockValue(defaultValue: string, label: string) {
@@ -31,7 +31,7 @@ function ClockValue(defaultValue: string, label: string) {
 			(value as HTMLSpanElement).style.setProperty('--value', update)
 		},
 		element: ClockValueContainer(
-			span({ class: 'countdown font-mono text-8xl' },
+			span({ class: 'countdown font-mono justify-center text-4xl md:text-8xl' },
 				value,
 			),
 			label,
@@ -57,9 +57,9 @@ export function Clock() {
 		},
 		element: div({ class: 'grid grid-flow-col gap-5 text-center auto-cols-max' },
 			hours.element,
-			span({ class: 'text-7xl' }, ':'),
+			span({ class: 'text-4xl md:text-7xl' }, ':'),
 			minutes.element,
-			span({ class: 'text-7xl' }, ':'),
+			span({ class: 'text-4xl md:text-7xl' }, ':'),
 			seconds.element,
 		),
 	}
