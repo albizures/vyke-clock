@@ -1,0 +1,46 @@
+---
+export type Props = {
+  label: string;
+  classId: string;
+  type?: "text" | "number";
+  placeholder?: string;
+  topRighLabel?: string;
+  bottomLeftLabel?: string;
+  bottomRightLabel?: string;
+};
+
+const {
+  label,
+  topRighLabel,
+  bottomLeftLabel,
+  bottomRightLabel,
+  type = "text",
+  placeholder,
+  classId,
+} = Astro.props;
+---
+
+<label class="form-control w-full max-w-xs">
+  <div class="label">
+    <span class="label-text font-semibold">{label}</span>
+
+    {topRighLabel && <span class="label-text-alt">{topRighLabel}</span>}
+  </div>
+  <input
+    type={type}
+    placeholder={placeholder}
+    class:list={["input input-bordered w-full max-w-xs", classId]}
+  />
+  {
+    (bottomLeftLabel || bottomRightLabel) && (
+      <div class="label">
+        {bottomLeftLabel && (
+          <span class="label-text-alt">{bottomLeftLabel}</span>
+        )}
+        {bottomRightLabel && (
+          <span class="label-text-alt">{bottomRightLabel}</span>
+        )}
+      </div>
+    )
+  }
+</label>

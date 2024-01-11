@@ -1,10 +1,11 @@
 ---
+import Button from "../components/Button.astro";
 import Icon from "../components/Icon.astro";
+import Input from "../components/Input.astro";
 import StopwatchButton from "../components/StopwatchButton.astro";
 import Menu from "../components/menu/Menu.astro";
 import CenterHero from "../layouts/CenterHero.astro";
 import Page from "../layouts/Page.astro";
-import TimerInput from "../components/timer/TimerInput.astro";
 ---
 
 <Page>
@@ -15,18 +16,42 @@ import TimerInput from "../components/timer/TimerInput.astro";
         transition:name="clock"
         class="countdown font-mono text-4xl sm:text-8xl md:text-9xl"
       >
-        <TimerInput classId="input-hours" />
-        <span class="value-hours hidden" style="--value:00;"></span>:
-        <TimerInput classId="input-minutes" />
-        <span class="value-minutes hidden" style="--value:00;"></span>:
-        <TimerInput classId="input-seconds" />
-        <span class="value-seconds hidden" style="--value:00;"></span>
+        <span class="value-hours" style="--value:00;"></span>:
+        <span class="value-minutes" style="--value:00;"></span>:
+        <span class="value-seconds" style="--value:00;"></span>
       </span>
     </div>
-    <div class="flex gap-2 mt-4">
-      <StopwatchButton label="play" classId="play-btn">
+    <div
+      class="input-panel absolute gap-2 bg-base-100 flex flex-col justify-center items-center inset-0 w-full h-full"
+    >
+      <Input
+        classId="input-hours"
+        label="Hours"
+        placeholder="Enter here the hours"
+        type="number"
+      />
+      <Input
+        classId="input-minutes"
+        label="Minutes"
+        placeholder="Enter here the minutes"
+        type="number"
+      />
+      <Input
+        classId="input-seconds"
+        label="Seconds"
+        placeholder="Enter here the seconds"
+        type="number"
+      />
+
+      <Button classId="play-btn" class="mt-4" modifier="outline">
         <Icon icon="play" />
-      </StopwatchButton>
+        <span>PLAY</span>
+      </Button>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <!-- <StopwatchButton label="play" classId="play-btn">
+        <Icon icon="play" />
+      </StopwatchButton> -->
       <StopwatchButton label="pause" class="hidden" classId="pause-btn">
         <Icon icon="pause" />
       </StopwatchButton>
@@ -60,6 +85,7 @@ import TimerInput from "../components/timer/TimerInput.astro";
   const cssVar = "--value";
 
   const [
+    inputPanel,
     inputHours,
     valueHours,
     inputMinutes,
@@ -72,6 +98,7 @@ import TimerInput from "../components/timer/TimerInput.astro";
     editBtn,
   ] = r.unwrap(
     select(
+      query<HTMLDivElement>(".input-panel"),
       query<HTMLInputElement>(".input-hours"),
       query<HTMLElement>(".value-hours"),
       query<HTMLInputElement>(".input-minutes"),
@@ -86,13 +113,14 @@ import TimerInput from "../components/timer/TimerInput.astro";
   );
 
   function showInputs() {
-    show(inputHours, inputMinutes, inputSeconds);
+    show(inputPanel);
 
     hide(valueHours, valueMinutes, valueSeconds);
   }
 
   function showValues() {
-    hide(inputHours, inputMinutes, inputSeconds);
+    // hide(inputHours, inputMinutes, inputSeconds);
+    hide(inputPanel);
 
     show(valueHours, valueMinutes, valueSeconds);
   }
