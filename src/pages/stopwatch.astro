@@ -39,8 +39,8 @@ import Page from "../layouts/Page.astro";
 <script>
   import requestAnimationFrames from "request-animation-frames";
   import { r } from "@vyke/results";
-  import { fromMilliToTime, type TimeValues } from "../entities/stopwatch";
-  import { query, select, setStyleVar } from "../entities/html";
+  import { fromMilliToTime, type TimeValues } from "../entities/time";
+  import { hide, query, select, setStyleVar, show } from "../entities/html";
 
   const [hours, minutes, seconds, millis, play, pause, reset] = r.unwrap(
     select(
@@ -61,8 +61,8 @@ import Page from "../layouts/Page.astro";
   play.onclick = () => {
     run();
     isPaused = false;
-    play.classList.add("hidden");
-    pause.classList.remove("hidden");
+    show(pause);
+    hide(play);
   };
 
   reset.onclick = () => {
@@ -74,8 +74,8 @@ import Page from "../layouts/Page.astro";
 
   pause.onclick = () => {
     isPaused = true;
-    play.classList.remove("hidden");
-    pause.classList.add("hidden");
+    show(play);
+    hide(pause);
   };
 
   async function run() {
@@ -96,7 +96,7 @@ import Page from "../layouts/Page.astro";
     setStyleVar(hours, cssVar, values.hours);
     setStyleVar(minutes, cssVar, values.minutes);
     setStyleVar(seconds, cssVar, values.seconds);
-    setStyleVar(millis, cssVar, values.milli);
+    setStyleVar(millis, cssVar, values.millis);
   }
 </script>
 

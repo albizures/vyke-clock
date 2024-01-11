@@ -25,7 +25,7 @@ import Page from "../layouts/Page.astro";
 <script>
   import requestAnimationFrames from "request-animation-frames";
   import { r } from "@vyke/results";
-  import { getClockValues } from "../entities/clock";
+  import { getTimeValues } from "../entities/time";
   import { query, select, setStyleVar } from "../entities/html";
 
   const [hours, minutes, seconds] = r.unwrap(
@@ -37,7 +37,7 @@ import Page from "../layouts/Page.astro";
   );
 
   for await (const _timestamp of requestAnimationFrames()) {
-    const values = getClockValues(new Date());
+    const values = getTimeValues(new Date());
 
     setStyleVar(hours, "--value", values.hours);
     setStyleVar(minutes, "--value", values.minutes);

@@ -49,13 +49,14 @@ import TimerInput from "../components/timer/TimerInput.astro";
     query,
     select,
     setStyleVar,
-    addClass,
-    removeClass,
+    shake,
+    enable,
+    disable,
+    show,
+    hide,
   } from "../entities/html";
-  import { fromMilliToTime, type TimeValues } from "../entities/stopwatch";
-  import { zeroPad } from "../entities/clock";
+  import { fromMilliToTime, type TimeValues, zeroPad } from "../entities/time";
 
-  const hiddenClass = "hidden";
   const cssVar = "--value";
 
   const [
@@ -85,30 +86,15 @@ import TimerInput from "../components/timer/TimerInput.astro";
   );
 
   function showInputs() {
-    removeClass(inputHours, hiddenClass);
-    removeClass(inputMinutes, hiddenClass);
-    removeClass(inputSeconds, hiddenClass);
+    show(inputHours, inputMinutes, inputSeconds);
 
-    addClass(valueHours, hiddenClass);
-    addClass(valueMinutes, hiddenClass);
-    addClass(valueSeconds, hiddenClass);
+    hide(valueHours, valueMinutes, valueSeconds);
   }
 
   function showValues() {
-    addClass(inputHours, hiddenClass);
-    addClass(inputMinutes, hiddenClass);
-    addClass(inputSeconds, hiddenClass);
+    hide(inputHours, inputMinutes, inputSeconds);
 
-    removeClass(valueHours, hiddenClass);
-    removeClass(valueMinutes, hiddenClass);
-    removeClass(valueSeconds, hiddenClass);
-  }
-
-  function shake(element: HTMLElement) {
-    addClass(element, "animate-shake");
-    setTimeout(() => {
-      removeClass(element, "animate-shake");
-    }, 1000);
+    show(valueHours, valueMinutes, valueSeconds);
   }
 
   function getValue(input: HTMLInputElement) {
@@ -116,27 +102,13 @@ import TimerInput from "../components/timer/TimerInput.astro";
   }
 
   function showPauseBtn() {
-    addClass(playBtn, hiddenClass);
-    removeClass(pauseBtn, hiddenClass);
+    hide(playBtn);
+    show(pauseBtn);
   }
 
   function showPlayBtn() {
-    removeClass(playBtn, hiddenClass);
-    addClass(pauseBtn, hiddenClass);
-  }
-
-  function enableEditBtn() {
-    editBtn.disabled = false;
-  }
-  function disableEditBtn() {
-    editBtn.disabled = true;
-  }
-
-  function disableResetBtn() {
-    resetBtn.disabled = true;
-  }
-  function enableResetBtn() {
-    resetBtn.disabled = false;
+    show(playBtn);
+    hide(pauseBtn);
   }
 
   function setInputValues(values: TimeValues) {
@@ -149,9 +121,9 @@ import TimerInput from "../components/timer/TimerInput.astro";
     if (start !== 0) {
       isPaused = false;
       showPauseBtn();
-      enableEditBtn();
+      enable(editBtn);
+      enable(resetBtn);
       showValues();
-      enableResetBtn();
       run();
       return;
     }
@@ -183,13 +155,13 @@ import TimerInput from "../components/timer/TimerInput.astro";
       isPaused = false;
       showValues();
       showPauseBtn();
-      enableEditBtn();
-      enableResetBtn();
+      enable(editBtn);
+      enable(resetBtn);
       setInputValues({
         hours,
         minutes,
         seconds,
-        milli: 0,
+        millis: 0,
       });
       start = hours * 3_600_000 + minutes * 60_000 + seconds * 1000;
       run();
@@ -203,8 +175,8 @@ import TimerInput from "../components/timer/TimerInput.astro";
   pauseBtn.onclick = () => {
     showInputs();
     showPlayBtn();
-    disableResetBtn();
-    disableEditBtn();
+    disable(resetBtn);
+    disable(editBtn);
     setInputValues(fromMilliToTime(start - delta));
     isPaused = true;
   };
@@ -214,9 +186,9 @@ import TimerInput from "../components/timer/TimerInput.astro";
     delta = 0;
     start = 0;
     showInputs();
-    disableResetBtn();
     showPlayBtn();
-    disableEditBtn();
+    disable(resetBtn);
+    disable(editBtn);
   };
 
   let start = 0;
