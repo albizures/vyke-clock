@@ -1,0 +1,107 @@
+---
+import Icon from "../components/Icon.astro";
+import StopwatchButton from "../components/StopwatchButton.astro";
+import Menu from "../components/menu/Menu.astro";
+import CenterHero from "../layouts/CenterHero.astro";
+import Page from "../layouts/Page.astro";
+---
+
+<Page>
+  <CenterHero>
+    <div>
+      <span
+        transition:animate="fade"
+        transition:name="clock"
+        class="countdown text-base-content font-mono text-4xl sm:text-8xl md:text-9xl"
+      >
+        <span class="value-hours" style="--value:00;"></span>:
+        <span class="value-minutes" style="--value:00;"></span>:
+        <span class="value-seconds" style="--value:00;"></span>:
+        <span class="value-millis no-transition" style="--value:00;"></span>
+      </span>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <StopwatchButton label="play" classId="play-btn">
+        <Icon icon="play" />
+      </StopwatchButton>
+      <StopwatchButton label="pause" class="hidden" classId="pause-btn">
+        <Icon icon="pause" />
+      </StopwatchButton>
+      <StopwatchButton label="reset" classId="reset-btn">
+        <Icon icon="reload" />
+      </StopwatchButton>
+    </div>
+  </CenterHero>
+
+  <Menu active="stopwatch" />
+</Page>
+
+<script>
+  import requestAnimationFrames from "request-animation-frames";
+  import { r } from "@vyke/results";
+  import { fromMilliToTime, type TimeValues } from "../entities/stopwatch";
+  import { query, select, setStyleVar } from "../entities/html";
+
+  const [hours, minutes, seconds, millis, play, pause, reset] = r.unwrap(
+    select(
+      query<HTMLElement>(".value-hours"),
+      query<HTMLElement>(".value-minutes"),
+      query<HTMLElement>(".value-seconds"),
+      query<HTMLElement>(".value-millis"),
+      query<HTMLButtonElement>(".play-btn"),
+      query<HTMLButtonElement>(".pause-btn"),
+      query<HTMLButtonElement>(".reset-btn")
+    )
+  );
+  const cssVar = "--value";
+
+  let delta = 0;
+  let isPaused = false;
+
+  play.onclick = () => {
+    run();
+    isPaused = false;
+    play.classList.add("hidden");
+    pause.classList.remove("hidden");
+  };
+
+  reset.onclick = () => {
+    delta = 0;
+    if (isPaused) {
+      update(fromMilliToTime(delta));
+    }
+  };
+
+  pause.onclick = () => {
+    isPaused = true;
+    play.classList.remove("hidden");
+    pause.classList.add("hidden");
+  };
+
+  async function run() {
+    let last = Date.now();
+    for await (const _timestamp of requestAnimationFrames()) {
+      if (isPaused) {
+        break;
+      }
+      const now = Date.now();
+      delta += now - last;
+      last = now;
+
+      update(fromMilliToTime(delta));
+    }
+  }
+
+  function update(values: TimeValues) {
+    setStyleVar(hours, cssVar, values.hours);
+    setStyleVar(minutes, cssVar, values.minutes);
+    setStyleVar(seconds, cssVar, values.seconds);
+    setStyleVar(millis, cssVar, values.milli);
+  }
+</script>
+
+<style>
+  .no-transition:before {
+    transition-duration: 0s;
+  }
+</style>

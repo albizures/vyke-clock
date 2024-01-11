@@ -1,0 +1,258 @@
+---
+import Icon from "../components/Icon.astro";
+import StopwatchButton from "../components/StopwatchButton.astro";
+import Menu from "../components/menu/Menu.astro";
+import CenterHero from "../layouts/CenterHero.astro";
+import Page from "../layouts/Page.astro";
+import TimerInput from "../components/timer/TimerInput.astro";
+---
+
+<Page>
+  <CenterHero>
+    <div>
+      <span
+        transition:animate="fade"
+        transition:name="clock"
+        class="countdown font-mono text-4xl sm:text-8xl md:text-9xl"
+      >
+        <TimerInput classId="input-hours" />
+        <span class="value-hours hidden" style="--value:00;"></span>:
+        <TimerInput classId="input-minutes" />
+        <span class="value-minutes hidden" style="--value:00;"></span>:
+        <TimerInput classId="input-seconds" />
+        <span class="value-seconds hidden" style="--value:00;"></span>
+      </span>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <StopwatchButton label="play" classId="play-btn">
+        <Icon icon="play" />
+      </StopwatchButton>
+      <StopwatchButton label="pause" class="hidden" classId="pause-btn">
+        <Icon icon="pause" />
+      </StopwatchButton>
+      <StopwatchButton disabled label="restart" classId="reset-btn">
+        <Icon icon="reload" />
+      </StopwatchButton>
+      <StopwatchButton disabled label="edit" classId="edit-btn">
+        <Icon icon="edit" />
+      </StopwatchButton>
+    </div>
+  </CenterHero>
+
+  <Menu active="timer" />
+</Page>
+
+<script>
+  import requestAnimationFrames from "request-animation-frames";
+  import { r } from "@vyke/results";
+  import {
+    query,
+    select,
+    setStyleVar,
+    addClass,
+    removeClass,
+  } from "../entities/html";
+  import { fromMilliToTime, type TimeValues } from "../entities/stopwatch";
+  import { zeroPad } from "../entities/clock";
+
+  const hiddenClass = "hidden";
+  const cssVar = "--value";
+
+  const [
+    inputHours,
+    valueHours,
+    inputMinutes,
+    valueMinutes,
+    inputSeconds,
+    valueSeconds,
+    playBtn,
+    pauseBtn,
+    resetBtn,
+    editBtn,
+  ] = r.unwrap(
+    select(
+      query<HTMLInputElement>(".input-hours"),
+      query<HTMLElement>(".value-hours"),
+      query<HTMLInputElement>(".input-minutes"),
+      query<HTMLElement>(".value-minutes"),
+      query<HTMLInputElement>(".input-seconds"),
+      query<HTMLElement>(".value-seconds"),
+      query<HTMLButtonElement>(".play-btn"),
+      query<HTMLButtonElement>(".pause-btn"),
+      query<HTMLButtonElement>(".reset-btn"),
+      query<HTMLButtonElement>(".edit-btn")
+    )
+  );
+
+  function showInputs() {
+    removeClass(inputHours, hiddenClass);
+    removeClass(inputMinutes, hiddenClass);
+    removeClass(inputSeconds, hiddenClass);
+
+    addClass(valueHours, hiddenClass);
+    addClass(valueMinutes, hiddenClass);
+    addClass(valueSeconds, hiddenClass);
+  }
+
+  function showValues() {
+    addClass(inputHours, hiddenClass);
+    addClass(inputMinutes, hiddenClass);
+    addClass(inputSeconds, hiddenClass);
+
+    removeClass(valueHours, hiddenClass);
+    removeClass(valueMinutes, hiddenClass);
+    removeClass(valueSeconds, hiddenClass);
+  }
+
+  function shake(element: HTMLElement) {
+    addClass(element, "animate-shake");
+    setTimeout(() => {
+      removeClass(element, "animate-shake");
+    }, 1000);
+  }
+
+  function getValue(input: HTMLInputElement) {
+    return Number(input.value);
+  }
+
+  function showPauseBtn() {
+    addClass(playBtn, hiddenClass);
+    removeClass(pauseBtn, hiddenClass);
+  }
+
+  function showPlayBtn() {
+    removeClass(playBtn, hiddenClass);
+    addClass(pauseBtn, hiddenClass);
+  }
+
+  function enableEditBtn() {
+    editBtn.disabled = false;
+  }
+  function disableEditBtn() {
+    editBtn.disabled = true;
+  }
+
+  function disableResetBtn() {
+    resetBtn.disabled = true;
+  }
+  function enableResetBtn() {
+    resetBtn.disabled = false;
+  }
+
+  function setInputValues(values: TimeValues) {
+    inputHours.value = zeroPad(values.hours);
+    inputMinutes.value = zeroPad(values.minutes);
+    inputSeconds.value = zeroPad(values.seconds);
+  }
+
+  playBtn.onclick = () => {
+    if (start !== 0) {
+      isPaused = false;
+      showPauseBtn();
+      enableEditBtn();
+      showValues();
+      enableResetBtn();
+      run();
+      return;
+    }
+    const hours = getValue(inputHours);
+    const minutes = getValue(inputMinutes);
+    const seconds = getValue(inputSeconds);
+    const hoursIsValid = !Number.isNaN(hours);
+    const minutesIsValid = !Number.isNaN(minutes);
+    const secondsIsValid = !Number.isNaN(seconds);
+    if (!hoursIsValid) {
+      shake(inputHours);
+    }
+    if (!minutesIsValid) {
+      shake(inputMinutes);
+    }
+    if (!secondsIsValid) {
+      shake(inputSeconds);
+    }
+
+    const timeValid = hours > 0 || minutes > 0 || seconds > 0;
+
+    if (!timeValid) {
+      shake(inputHours);
+      shake(inputMinutes);
+      shake(inputSeconds);
+    }
+
+    if (timeValid && hoursIsValid && minutesIsValid && secondsIsValid) {
+      isPaused = false;
+      showValues();
+      showPauseBtn();
+      enableEditBtn();
+      enableResetBtn();
+      setInputValues({
+        hours,
+        minutes,
+        seconds,
+        milli: 0,
+      });
+      start = hours * 3_600_000 + minutes * 60_000 + seconds * 1000;
+      run();
+    }
+  };
+
+  resetBtn.onclick = () => {
+    delta = 0;
+  };
+
+  pauseBtn.onclick = () => {
+    showInputs();
+    showPlayBtn();
+    disableResetBtn();
+    disableEditBtn();
+    setInputValues(fromMilliToTime(start - delta));
+    isPaused = true;
+  };
+
+  editBtn.onclick = () => {
+    isPaused = true;
+    delta = 0;
+    start = 0;
+    showInputs();
+    disableResetBtn();
+    showPlayBtn();
+    disableEditBtn();
+  };
+
+  let start = 0;
+
+  let delta = 0;
+  let isPaused = false;
+
+  async function run() {
+    let last = Date.now();
+    for await (const _timestamp of requestAnimationFrames()) {
+      if (isPaused) {
+        break;
+      }
+
+      const now = Date.now();
+      delta += now - last;
+      last = now;
+
+      let current = start - delta;
+
+      update(fromMilliToTime(current));
+
+      if (current < 0) {
+        isPaused = true;
+        // delta = 0;
+        current = 0;
+        showPlayBtn();
+        update(fromMilliToTime(current));
+        break;
+      }
+    }
+  }
+
+  function update(values: TimeValues) {
+    setStyleVar(valueHours, cssVar, values.hours);
+    setStyleVar(valueMinutes, cssVar, values.minutes);
+    setStyleVar(valueSeconds, cssVar, values.seconds);
+  }
+</script>

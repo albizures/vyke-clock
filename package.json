@@ -1,26 +1,26 @@
 {
-	"name": "clock",
-	"type": "module",
-	"version": "0.0.0",
-	"private": true,
-	"scripts": {
-		"dev": "vite",
-		"build": "tsc && vite build",
-		"preview": "vite preview"
-	},
-	"dependencies": {
-		"@svg-icons/fa-solid": "^1.87.0",
-		"@vyke/elements": "^0.0.8",
-		"request-animation-frames": "^0.1.1"
-	},
-	"devDependencies": {
-		"@antfu/eslint-config": "^2.4.6",
-		"autoprefixer": "^10.4.16",
-		"daisyui": "^4.4.20",
-		"eslint": "^8.56.0",
-		"postcss": "^8.4.32",
-		"tailwindcss": "^3.3.7",
-		"typescript": "^5.2.2",
-		"vite": "^5.0.8"
-	}
+  "name": "aclock",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.4.1",
+    "@astrojs/tailwind": "^5.1.0",
+    "@iconify-json/fa-solid": "^1.1.8",
+    "@vyke/results": "^0.0.6",
+    "astro": "^4.1.1",
+    "astro-icon": "^1.0.2",
+    "request-animation-frames": "^1.0.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "daisyui": "^4.5.0"
+  }
 }

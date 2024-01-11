@@ -1,0 +1,46 @@
+---
+import Menu from "../components/menu/Menu.astro";
+import CenterHero from "../layouts/CenterHero.astro";
+import Page from "../layouts/Page.astro";
+---
+
+<Page>
+  <CenterHero>
+    <div>
+      <span
+        transition:animate="fade"
+        transition:name="clock"
+        class="countdown font-mono text-4xl sm:text-8xl md:text-9xl"
+      >
+        <span class="value-hours" style="--value:00;"></span>:
+        <span class="value-minutes" style="--value:00;"></span>:
+        <span class="value-seconds" style="--value:00;"></span>
+      </span>
+    </div>
+  </CenterHero>
+
+  <Menu active="clock" />
+</Page>
+
+<script>
+  import requestAnimationFrames from "request-animation-frames";
+  import { r } from "@vyke/results";
+  import { getClockValues } from "../entities/clock";
+  import { query, select, setStyleVar } from "../entities/html";
+
+  const [hours, minutes, seconds] = r.unwrap(
+    select(
+      query<HTMLElement>(".value-hours"),
+      query<HTMLElement>(".value-minutes"),
+      query<HTMLElement>(".value-seconds")
+    )
+  );
+
+  for await (const _timestamp of requestAnimationFrames()) {
+    const values = getClockValues(new Date());
+
+    setStyleVar(hours, "--value", values.hours);
+    setStyleVar(minutes, "--value", values.minutes);
+    setStyleVar(seconds, "--value", values.seconds);
+  }
+</script>
