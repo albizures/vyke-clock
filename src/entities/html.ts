@@ -10,6 +10,7 @@ export function setStyleVar(
 
 type Query<TType> = {
   selector: string;
+  type: "one" | "all";
   instance: TType | undefined;
 };
 
@@ -30,6 +31,15 @@ export function query<TType = never>(
   return {
     selector,
     instance,
+    type: "one",
+  };
+}
+
+export function queryAll<TType = never>(selector: string): Query<Array<TType>> {
+  return {
+    selector,
+    instance: undefined,
+    type: "all",
   };
 }
 
@@ -39,21 +49,25 @@ export function select<TQueries extends Array<Query<unknown>>>(
   const elements: Array<unknown> = [];
 
   for (const query of queries) {
-    const element = document.querySelector(query.selector);
+    if (query.type === "one") {
+      const element = document.querySelector(query.selector);
 
-    if (!element) {
-      return r.err(
-        new Error(`Element not found with selector "${query.selector}"`)
-      );
+      if (!element) {
+        return r.err(
+          new Error(`Element not found with selector "${query.selector}"`)
+        );
+      }
+
+      if (query.instance && !(element instanceof (query.instance as any))) {
+        return r.err(
+          new Error(`Invalid selected type with selector "${query.selector}"`)
+        );
+      }
+
+      elements.push(element);
+    } else {
+      elements.push([...document.querySelectorAll(query.selector)]);
     }
-
-    if (query.instance && !(element instanceof (query.instance as any))) {
-      return r.err(
-        new Error(`Invalid selected type with selector "${query.selector}"`)
-      );
-    }
-
-    elements.push(element);
   }
 
   return r.ok(elements as ExtraTypeFromEach<TQueries>);

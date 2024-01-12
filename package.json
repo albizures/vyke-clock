@@ -12,6 +12,8 @@
   "dependencies": {
     "@astrojs/check": "^0.4.1",
     "@astrojs/tailwind": "^5.1.0",
+    "@fontsource-variable/nunito": "^5.0.17",
+    "@fontsource-variable/oswald": "^5.0.18",
     "@iconify-json/fa-solid": "^1.1.8",
     "@vyke/results": "^0.0.6",
     "astro": "^4.1.1",

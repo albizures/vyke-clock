@@ -1,9 +1,16 @@
+import defaultTheme from 'tailwindcss/defaultTheme'
+import { themes } from './src/themes'
+// const defaultTheme = require("tailwindcss/defaultTheme");
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
 	safelist: ['animate-shake'],
 	theme: {
 		extend: {
+			fontFamily: {
+				serif: ['Oswald Variable', ...defaultTheme.fontFamily.serif],
+				sans: ['Nunito Variable', ...defaultTheme.fontFamily.sans]
+			},
 			animation: {
 				'shake': 'shake .5s both',
 			},
@@ -30,6 +37,6 @@ export default {
 	},
 	plugins: [require('daisyui')],
 	daisyui: {
-		themes: ['light', 'dark', 'cupcake'],
+		themes,
 	},
 }
