@@ -1,5 +1,7 @@
 ---
+import Icon from "../components/Icon.astro";
 import Menu from "../components/menu/Menu.astro";
+import { timezoneItemBtn } from "../entities/clockIds";
 import CenterHero from "../layouts/CenterHero.astro";
 import Page from "../layouts/Page.astro";
 ---
@@ -17,8 +19,34 @@ import Page from "../layouts/Page.astro";
         <span class="value-seconds" style="--value:00;"></span>
       </span>
     </div>
-  </CenterHero>
+    <div class="mt-4">
+      <button class="timezone-btn font-serif text-xl">
+        <span class="timezone-label">America/Guatemala</span>
+        <Icon icon="caret" class="inline-block ml-1" />
+      </button>
+    </div>
+    <div
+      class="timezone-panel hidden absolute inset-0 w-full h-full bg-base-100 py-24"
+    >
+      <div class="flex flex-col max-w-lg mx-auto h-full">
+        <ul class="timezone-list border-t border-b flex-1 overflow-y-scroll">
+        </ul>
 
+        <div class="text-center">
+          <button class="cancel-btn btn mt-4 btn-secondary uppercase">
+            cancel
+          </button>
+        </div>
+      </div>
+    </div>
+    <template class="template-timezone-item">
+      <li class="text-center">
+        <button
+          class="btn btn-block btn-ghost"
+          class:list={[timezoneItemBtn.name]}></button>
+      </li>
+    </template>
+  </CenterHero>
   <Menu active="clock" />
 </Page>
 
@@ -26,18 +54,67 @@ import Page from "../layouts/Page.astro";
   import requestAnimationFrames from "request-animation-frames";
   import { r } from "@vyke/results";
   import { getTimeValues } from "../entities/time";
-  import { query, select, setStyleVar } from "../entities/html";
+  import dayjs from "dayjs";
+  import utc from "dayjs/plugin/utc";
+  import tz from "dayjs/plugin/timezone";
+  import { hide, query, select, setStyleVar, show } from "../entities/html";
+  import { formatTimezone } from "../entities/timezone";
 
-  const [hours, minutes, seconds] = r.unwrap(
+  dayjs.extend(utc);
+  dayjs.extend(tz);
+
+  let currentTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const [
+    hours,
+    minutes,
+    seconds,
+    timezonePanel,
+    timezoneBtn,
+    cancelBtn,
+    timezoneList,
+    templateTimezoneItem,
+    timezoneLabel,
+  ] = r.unwrap(
     select(
       query<HTMLElement>(".value-hours"),
       query<HTMLElement>(".value-minutes"),
-      query<HTMLElement>(".value-seconds")
+      query<HTMLElement>(".value-seconds"),
+      query<HTMLDivElement>(".timezone-panel"),
+      query<HTMLButtonElement>(".timezone-btn"),
+      query<HTMLButtonElement>(".cancel-btn"),
+      query<HTMLUListElement>(".timezone-list"),
+      query<HTMLTemplateElement>(".template-timezone-item"),
+      query<HTMLSpanElement>(".timezone-label")
     )
   );
 
+  timezoneLabel.textContent = formatTimezone(currentTimezone);
+
+  timezoneBtn.onclick = async () => {
+    const result = await r.to(import("../entities/timezoneHandler"));
+
+    if (!result.ok) {
+      return;
+    }
+
+    const { timezoneHandler } = result.value;
+    show(timezonePanel);
+    timezoneHandler({
+      cancelBtn,
+      currentTimezone,
+      templateItem: templateTimezoneItem,
+      list: timezoneList,
+      onClose(value) {
+        currentTimezone = value;
+        timezoneLabel.textContent = formatTimezone(value);
+        hide(timezonePanel);
+      },
+    });
+  };
+
   for await (const _timestamp of requestAnimationFrames()) {
-    const values = getTimeValues(new Date());
+    const values = getTimeValues(dayjs().tz(currentTimezone));
 
     setStyleVar(hours, "--value", values.hours);
     setStyleVar(minutes, "--value", values.minutes);

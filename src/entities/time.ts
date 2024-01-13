@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 export const SEC_IN_MS = 1000;
 export const MIN_IN_MS = SEC_IN_MS * 60;
 export const HOUR_IN_MS = MIN_IN_MS * 60;
@@ -35,12 +36,12 @@ export type StrTimeValues = {
   [TKey in keyof TimeValues]: string;
 };
 
-export function getTimeValues(date: Date): StrTimeValues {
+export function getTimeValues(date: dayjs.Dayjs): StrTimeValues {
   return {
-    hours: zeroPad(date.getHours()),
-    minutes: zeroPad(date.getMinutes()),
-    seconds: zeroPad(date.getSeconds()),
-    millis: zeroPad(date.getMilliseconds()),
+    hours: zeroPad(date.hour()),
+    minutes: zeroPad(date.minute()),
+    seconds: zeroPad(date.second()),
+    millis: zeroPad(date.millisecond()),
   };
 }
 

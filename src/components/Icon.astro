@@ -1,13 +1,14 @@
 ---
 export type Props = {
   icon: IconName;
+  class?: string;
 };
 
 export type IconName = keyof typeof icons;
 
 import { Icon as AstroIcon } from "astro-icon/components";
 
-const { icon } = Astro.props;
+const { icon, class: className } = Astro.props;
 
 const icons = {
   stopwatch: "fa-solid:stopwatch",
@@ -18,9 +19,10 @@ const icons = {
   pause: "fa-solid:pause",
   reload: "fa-solid:redo-alt",
   edit: "fa-solid:pencil-alt",
+  caret: "fa-solid:caret-down",
 };
 
 const iconName = icons[icon];
 ---
 
-<AstroIcon name={iconName} />
+<AstroIcon class={className} name={iconName} />

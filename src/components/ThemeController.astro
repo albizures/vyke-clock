@@ -47,7 +47,6 @@ import { themes } from "../themes";
 
   for (const radio of radios) {
     radio.onclick = () => {
-      console.log(radio, radio.value);
       document.documentElement.dataset.theme = radio.value;
     };
   }

@@ -74,9 +74,14 @@ const socialImageURL = new URL(
     <div class="absolute top-0 right-0 px-10 py-6">
       <ThemeController />
     </div>
-    <script
-      data-goatcounter="https://vyke-clock.goatcounter.com/count"
-      async
-      src="//gc.zgo.at/count.js"></script>
+    {
+      import.meta.env.MODE === "PRODUCTION" && (
+        <script
+          data-goatcounter="https://vyke-clock.goatcounter.com/count"
+          async
+          src="//gc.zgo.at/count.js"
+        />
+      )
+    }
   </body>
 </html>

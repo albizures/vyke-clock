@@ -3,5 +3,8 @@
 export const themes = [
 	'light',
 	'dark',
-	'cupcake'
+	'cupcake',
+	'valentine',
+	'halloween',
+	'pastel'
 ]

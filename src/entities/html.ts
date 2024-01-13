@@ -8,7 +8,7 @@ export function setStyleVar(
   element.style.setProperty(name, String(value));
 }
 
-type Query<TType> = {
+export type Query<TType> = {
   selector: string;
   type: "one" | "all";
   instance: TType | undefined;
@@ -43,14 +43,15 @@ export function queryAll<TType = never>(selector: string): Query<Array<TType>> {
   };
 }
 
-export function select<TQueries extends Array<Query<unknown>>>(
+export function selectIn<TQueries extends Array<Query<unknown>>>(
+  parent: ParentNode,
   ...queries: TQueries
 ): Result<ExtraTypeFromEach<TQueries>, Error> {
   const elements: Array<unknown> = [];
 
   for (const query of queries) {
     if (query.type === "one") {
-      const element = document.querySelector(query.selector);
+      const element = parent.querySelector(query.selector);
 
       if (!element) {
         return r.err(
@@ -71,6 +72,12 @@ export function select<TQueries extends Array<Query<unknown>>>(
   }
 
   return r.ok(elements as ExtraTypeFromEach<TQueries>);
+}
+
+export function select<TQueries extends Array<Query<unknown>>>(
+  ...queries: TQueries
+): Result<ExtraTypeFromEach<TQueries>, Error> {
+  return selectIn(document, ...queries);
 }
 
 export function removeClass(element: HTMLElement, className: string) {
