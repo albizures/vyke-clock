@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.4.1",
+    "@astrojs/sitemap": "^3.0.4",
     "@astrojs/tailwind": "^5.1.0",
     "@fontsource-variable/nunito": "^5.0.17",
     "@fontsource-variable/oswald": "^5.0.18",

@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
 import { SITE } from './src/config';
 import icon from "astro-icon";
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,5 +10,5 @@ export default defineConfig({
   devToolbar: {
     'enabled': false,
   },
-  integrations: [tailwind(), icon()]
+  integrations: [tailwind(), icon(), sitemap()]
 });
